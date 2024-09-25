@@ -68,11 +68,12 @@
   <body>
     <div class="track left">
       <data value="{}" id="leftPlayerData"></data>
+      <button onclick="LPlayer.pausePreview()">PausePreview</button>
       <button class="load" onclick="LPlayer.setData('videoId', prepareVideoId)">
-        Load</button
-      ><br />
+        Load
+      </button>
+      <br />
       <div class="yt-player" id="leftPlayer"></div>
-      <button onclick="LPlayer.pausePreview()">PausePreview</button><br />
       <fieldset>
         <legend>Adjust</legend>
         <button onclick="LPlayer.adjustTiming(-1)">&lt;</button>
@@ -88,8 +89,6 @@
         <button onclick="LPlayer.adjustTiming(+0.01)">&gt;</button>
         <br />
       </fieldset>
-
-      <br />
       <label>
         Speed<br />
         <input
@@ -145,10 +144,11 @@
     <div class="track right">
       <data value="{}" id="rightPlayerData"></data>
       <button class="load" onclick="RPlayer.setData('videoId', prepareVideoId)">
-        Load</button
-      ><br />
+        Load
+      </button>
+      <button onclick="RPlayer.pausePreview()">PausePreview</button>
+      <br />
       <div class="yt-player" id="rightPlayer"></div>
-      <button onclick="RPlayer.pausePreview()">PausePreview</button><br />
       <fieldset>
         <legend>Adjust</legend>
         <button onclick="RPlayer.adjustTiming(-1)">&lt;</button>
