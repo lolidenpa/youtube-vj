@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>YouTube-VJ Controller</title>
+    <style>
+      body {
+        margin: 0;
+        --center-width: 140px;
+        --track-width: calc((100vw - var(--center-width)) / 2);
+        background: black;
+        color: white;
+      }
+      body > div {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        padding: 10px;
+        text-align: center;
+        box-sizing: border-box;
+      }
+      body > div.track.left {
+        width: var(--track-width);
+        left: 0;
+      }
+      body > div.center {
+        width: var(--center-width);
+        left: var(--track-width);
+        right: var(--track-width);
+      }
+      body > div.track.right {
+        width: var(--track-width);
+        right: 0;
+      }
+      .yt-player {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+        border: solid 1px white;
+        box-sizing: border-box;
+      }
+      div.vertical-fader {
+        display: flex; /* フレックスボックスを使用 */
+        justify-content: center; /* 水平方向に中央寄せ */
+        align-items: center; /* 垂直方向に中央寄せ */
+      }
+      div.vertical-fader > div.fader-container {
+        width: 50%; /* 高さとして表示される */
+        height: 200px; /* 横幅として表示される */
+        display: inline-block;
+        text-align: center;
+        display: flex; /* フレックスボックスを使用 */
+        justify-content: center; /* 水平方向に中央寄せ */
+        align-items: center; /* 垂直方向に中央寄せ */
+      }
+      div.vertical-fader > div.fader-container > .fader {
+        writing-mode: bt-lr; /* 上下方向の動きを作る */
+        transform: rotate(270deg); /* スライダーを270度回転して縦方向に */
+        width: 200px; /* 高さとして表示される */
+        height: 20px; /* 横幅として表示される */
+        margin: 50px;
+      }
+    </style>
+    <script src="controller.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="player.js"></script>
+  </head>
+  <body>
+    <div class="track left">
+      <data value="{}" id="leftPlayerData"></data>
+      <button class="load" onclick="LPlayer.setData('videoId', prepareVideoId)">
+        Load</button
+      ><br />
+      <div class="yt-player" id="leftPlayer"></div>
+      <button onclick="LPlayer.pausePreview()">PausePreview</button><br />
+      <fieldset>
+        <legend>Adjust</legend>
+        <button onclick="LPlayer.adjustTiming(-1)">&lt;</button>
+        1s
+        <button onclick="LPlayer.adjustTiming(+1)">&gt;</button>
+        <br />
+        <button onclick="LPlayer.adjustTiming(-0.1)">&lt;</button>
+        0.1s
+        <button onclick="LPlayer.adjustTiming(+0.1)">&gt;</button>
+        <br />
+        <button onclick="LPlayer.adjustTiming(-0.01)">&lt;</button>
+        0.01s
+        <button onclick="LPlayer.adjustTiming(+0.01)">&gt;</button>
+        <br />
+      </fieldset>
+
+      <br />
+      <label>
+        Speed<br />
+        <input
+          type="range"
+          step="0.1"
+          value="1.0"
+          min="0.1"
+          max="2"
+          oninput="LPlayer.setData('speed', parseFloat(this.value))"
+        />
+      </label>
+    </div>
+    <div class="center">
+      <data value="0" id="videoId"></data>
+      <img class="yt-thumbnail" /><br />
+      <span class="videoId"></span><br />
+      <div class="vertical-fader">
+        <div class="fader-container">
+          <input
+            type="range"
+            class="fader"
+            step="0.01"
+            value="1.0"
+            min="0"
+            max="1"
+            oninput="setLOpacity(parseFloat(this.value))"
+          />
+        </div>
+        <div class="fader-container">
+          <input
+            type="range"
+            class="fader"
+            id="Ropacity"
+            step="0.01"
+            value="1.0"
+            min="0"
+            max="1"
+            oninput="setROpacity(parseFloat(this.value))"
+          />
+        </div>
+      </div>
+      <input
+        type="range"
+        class="fader"
+        id="horizontal-fader"
+        step="0.01"
+        value="0"
+        min="-1"
+        max="1"
+        oninput="setLROpacity(parseFloat(this.value))"
+      />
+    </div>
+    <div class="track right">
+      <data value="{}" id="rightPlayerData"></data>
+      <button class="load" onclick="RPlayer.setData('videoId', prepareVideoId)">
+        Load</button
+      ><br />
+      <div class="yt-player" id="rightPlayer"></div>
+      <button onclick="RPlayer.pausePreview()">PausePreview</button><br />
+      <fieldset>
+        <legend>Adjust</legend>
+        <button onclick="RPlayer.adjustTiming(-1)">&lt;</button>
+        1s
+        <button onclick="RPlayer.adjustTiming(+1)">&gt;</button>
+        <br />
+        <button onclick="RPlayer.adjustTiming(-0.1)">&lt;</button>
+        0.1s
+        <button onclick="RPlayer.adjustTiming(+0.1)">&gt;</button>
+        <br />
+        <button onclick="RPlayer.adjustTiming(-0.01)">&lt;</button>
+        0.01s
+        <button onclick="RPlayer.adjustTiming(+0.01)">&gt;</button>
+        <br />
+      </fieldset>
+
+      <br />
+      <label>
+        Speed<br />
+        <input
+          type="range"
+          step="0.1"
+          value="1.0"
+          min="0.1"
+          max="2"
+          oninput="RPlayer.setData('speed', parseFloat(this.value))"
+        />
+      </label>
+    </div>
+  </body>
+</html>
+<!--
+chrome-extension://iffcgeoekmpllbbbjohlhjlkcokpnnjg/html/control.html
+-->
