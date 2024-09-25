@@ -2,7 +2,9 @@
  * 【VJ側】画面切替
  */
 
-var LPlayer, RPlayer;
+var LPlayer,
+  RPlayer,
+  feder = {};
 window.addEventListener("load", () => {
   LPlayer = new VJController("leftPlayer");
   RPlayer = new VJController("rightPlayer");
@@ -26,6 +28,12 @@ window.addEventListener("load", () => {
   /** 要素の変化監視をスタート */
   observer.observe(elem, config2);
 
+  feder = {
+    left: document.querySelector("#Lopacity").value,
+    right: document.querySelector("#Ropacity").value,
+    switch: document.querySelector("#horizontal-fader").value,
+  };
+  console.log(feder);
   calcOpacity();
 });
 
@@ -37,11 +45,6 @@ function changeVideo(id) {
   document.querySelector(".videoId").innerText = id;
   prepareVideoId = id;
 }
-var feder = {
-  left: 1,
-  right: 1,
-  switch: 0,
-};
 function setLOpacity(value) {
   feder.left = value;
   calcOpacity();
