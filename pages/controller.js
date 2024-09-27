@@ -55,6 +55,7 @@ window.addEventListener("load", () => {
   calcOpacity();
   setLSpeed(1);
   setRSpeed(1);
+  OpenProjectionWindow();
 });
 
 var prepareVideoId;
@@ -98,4 +99,8 @@ function calcOpacity() {
   }
   LPlayer.setData("opacity", l);
   RPlayer.setData("opacity", r);
+}
+
+function OpenProjectionWindow() {
+  window.open("./preview.html", "Projection", "width=640,height=360");
 }

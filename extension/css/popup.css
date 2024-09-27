@@ -1,15 +1,12 @@
 html {
   padding: 10px;
-  line-height: 1.75;
-  border: 1;
-  text-align: center;
 }
 
 button {
   width: 115px;
   background: #fc7777;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 8px;
   color: white;
   font-weight: bold;
 }
