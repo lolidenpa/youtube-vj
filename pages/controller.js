@@ -1,10 +1,4 @@
-/**
- * 【VJ側】画面切替
- */
-
-var LPlayer,
-  RPlayer,
-  feder = {};
+var LPlayer, RPlayer;
 window.addEventListener("load", () => {
   LPlayer = new VJController("leftPlayer");
   RPlayer = new VJController("rightPlayer");
@@ -28,12 +22,6 @@ window.addEventListener("load", () => {
   /** 要素の変化監視をスタート */
   observer.observe(elem, config2);
 
-  feder = {
-    left: document.querySelector("#Lopacity").value,
-    right: document.querySelector("#Ropacity").value,
-    switch: document.querySelector("#horizontal-fader").value,
-  };
-  console.log(feder);
   calcOpacity();
 });
 
@@ -44,25 +32,11 @@ function changeVideo(id) {
   ).src = `https://img.youtube.com/vi/${id}/default.jpg`;
   prepareVideoId = id;
 }
-function setLOpacity(value) {
-  feder.left = value;
-  calcOpacity();
-}
-
-function setROpacity(value) {
-  feder.right = value;
-  calcOpacity();
-}
-
-function setLROpacity(value) {
-  feder.switch = value;
-  calcOpacity();
-}
 
 function calcOpacity() {
-  var l = feder.left;
-  var r = feder.right;
-  var s = feder.switch;
+  var l = parseFloat(document.querySelector("#Lopacity").value);
+  var r = parseFloat(document.querySelector("#Ropacity").value);
+  var s = parseFloat(document.querySelector("#cross-fader").value);
   if (s < 0) {
     LPlayer.setData("z-index", 0);
     RPlayer.setData("z-index", 1);
