@@ -3,25 +3,20 @@ window.addEventListener("load", () => {
   LPlayer = new VJController("leftPlayer");
   RPlayer = new VJController("rightPlayer");
 
-  var observer = new MutationObserver(function () {
+  const relayElement = document.querySelector("#videoId");
+
+  var observer = new MutationObserver(() => {
     console.log("YTVJ:C 変更検知(videoId)");
-    const videoId = document.getElementById("videoId").value;
-    changeVideo(videoId);
+    changeVideo(relayElement.value);
   });
 
-  /** 監視対象の要素オブジェクト */
-  const elem = document.getElementById("videoId");
-
-  /** 監視時のオプション */
-  const config2 = {
+  observer.observe(relayElement, {
     attributes: true,
     childList: true,
     characterData: true,
-  };
+  });
 
-  /** 要素の変化監視をスタート */
-  observer.observe(elem, config2);
-
+  changeVideo(relayElement.value);
   calcOpacity();
 });
 
