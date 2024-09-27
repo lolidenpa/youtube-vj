@@ -10,8 +10,7 @@
       "matches": [
         "https://www.youtube.com/*",
         "http://localhost/youtube-vj/*"
-      ],
-      "run_at": "document_end"
+      ]
     }
   ],
   "description": "You can perform VJ using YouTube videos.",

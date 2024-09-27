@@ -1,20 +1,24 @@
 class VJController {
-  _isSeeked = false;
+  _data = {
+    videoId: "BLeUas72Mzk",
+    pause: false,
+    opacity: 1,
+    "z-index": 0,
+    speed: 1,
+  };
+  _elementId;
   _pausePreview = false;
+
   constructor(elementId, data = {}) {
+    this._elementId = elementId;
     this.player = new VJPlayer(elementId, data, false, {
-      onReady: (e) => {
-        this._onPlayerReady(e);
-      },
       onStateChange: (e) => {
         this._onPlayerStateChange(e);
       },
     });
-    this._dataElement = document.querySelector(`#${elementId}Data`);
-    this.setData("videoId", "BLeUas72Mzk");
-    this.setData("pause", false);
+
+    localStorage.removeItem(this._elementId);
   }
-  _onPlayerReady(e) {}
 
   _isChangeTiming = false;
   _onPlayerStateChange(e) {
@@ -26,21 +30,22 @@ class VJController {
      * 1: PLAYING
      *-1: UNSTARTED
      */
-    console.log(e.data);
     /**
      * 動画変更時
      * PAUSED -> UNSTARTED -> BUFFERING -> UNSTARTED -> BUFFERING -> PLAYING
      * 再生位置変更時の遷移
      * PAUSED -> BUFFERING -> PLAYING
+     * 動画終了時(自動再生)
+     * ENDED -> PLAYING -> BUFFERING -> PLAYING
      */
     // 再生位置変更(単純なローディングはしらん)
     if (e.data == YT.PlayerState.BUFFERING) {
       this.setData("pause", false);
-      this._isSeeked = true;
     }
-    // 動画変更時は自動再生
+    // 動画変更時は自動再生、タイミング通知
     if (e.data == YT.PlayerState.UNSTARTED) {
       this.setData("pause", false);
+      this._isChangeTiming = true;
     }
     if (e.data == YT.PlayerState.PAUSED) {
       if (this._pausePreview) {
@@ -75,16 +80,25 @@ class VJController {
   }
 
   setData(key, value) {
-    const dataElement = this._dataElement;
-    var data = this._loadData();
-    data[key] = value;
+    this._data[key] = value;
     if (key === "speed") {
       // 速度変更なら、タイミング情報も送信
       setTimeout(() => {
         this._setTiming();
       }, 100);
     }
-    dataElement.value = JSON.stringify(data);
+
+    localStorage.setItem(this._elementId, JSON.stringify(this._data));
+
+    // カスタムイベントを作成して発火
+    document.dispatchEvent(
+      new CustomEvent("VJPlayerUpdated", {
+        detail: {
+          key: this._elementId,
+          value: JSON.stringify(this._data),
+        },
+      })
+    );
   }
 
   pausePreview() {
@@ -93,23 +107,10 @@ class VJController {
     this.player.player.pauseVideo();
   }
 
-  _loadData() {
-    const dataElement = this._dataElement;
-    return JSON.parse(dataElement.value);
-  }
-
-  seekTo(target) {
-    this._isSeek = true;
-
-    this.player.seekTo(target, true);
-    this._setTiming();
-  }
-
   adjustTiming(sec) {
-    var data = this._loadData();
     this.setData("timing", {
-      timestamp: data.timing.timestamp,
-      playerTime: data.timing.playerTime + sec,
+      timestamp: this._data.timing.timestamp,
+      playerTime: this._data.timing.playerTime + sec,
     });
   }
 }
@@ -118,10 +119,8 @@ class VJPlayer {
   player = null;
   _elementId = null;
   _isViewer = null;
-  _dataElement = null;
   _data = {};
   _events = {};
-  __isYTPlayerReady = false;
 
   constructor(elementId, data = {}, viewer = false, events = {}) {
     this._events = events;
@@ -129,24 +128,20 @@ class VJPlayer {
     this._isViewer = viewer;
     data = {
       speed: 1,
-      pause: true,
+      pause: false,
       timing: {
-        timestamp: new Date() / 1000,
+        timestamp: 0,
         playerTime: 0,
       },
-      videoId: "aaa",
+      videoId: "BLeUas72Mzk", //【フリー動画素材】ローディング動画4秒【ダウンロード可能】
       ...data,
     };
 
     this.player = new YT.Player(elementId, {
-      videoId: "BLeUas72Mzk", //【フリー動画素材】ローディング動画4秒【ダウンロード可能】
+      videoId: data.videoId,
       events: {
         onReady: (e) => {
           this._onPlayerReady(e);
-
-          if (this._events.onReady) {
-            this._events.onReady(e);
-          }
         },
         onStateChange: (e) => {
           this._onPlayerStateChange(e);
@@ -157,48 +152,39 @@ class VJPlayer {
         },
       },
       playerVars: {
-        rel: 0, // 関連動画
-        controls: this._isViewer ? 0 : 1, // コントロール
+        autoplay: 1, // 自動再生
+        fs: 0, // 全画面表示ボタンを非表示
         iv_load_policy: 3, // アノテーション無効
       },
     });
 
-    this._dataElement = document.querySelector(`#${elementId}Data`);
     this._data = data;
     console.log(data);
-    this.__prepareObserver();
-  }
-
-  __prepareObserver() {
-    const elem = this._dataElement;
-
-    var observer = new MutationObserver(() => {
-      if (!this.__isYTPlayerReady) return;
-
-      console.log(`YTVJ:P 変更検知(${elem.id})`);
-      const data = JSON.parse(elem.value);
-      for (const key in data) {
-        this.__applyData(key, data[key]);
-      }
-    });
-
-    observer.observe(elem, {
-      attributes: true,
-      childList: true,
-      characterData: true,
-    });
   }
 
   _onPlayerReady(event) {
     console.log(`YTVJ:P YouTube Player Ready`);
-    this.__isYTPlayerReady = true;
 
     event.target.mute();
 
-    const data = JSON.parse(this._dataElement.value);
-    for (const key in data) {
-      this.__applyData(key, data[key]);
-    }
+    document.addEventListener("VJPlayerUpdated", (event) => {
+      if (event.detail.key === this._elementId) {
+        const data = JSON.parse(event.detail.value);
+        for (const key in data) {
+          this.__applyData(key, data[key]);
+        }
+      }
+    });
+
+    // 初回データ読み込み
+    document.dispatchEvent(
+      new CustomEvent("VJPlayerUpdated", {
+        detail: {
+          key: this._elementId,
+          value: localStorage.getItem(this._elementId),
+        },
+      })
+    );
   }
 
   __applyData(key, value) {
@@ -250,13 +236,10 @@ class VJPlayer {
     console.log("ChangeState" + event.data);
 
     if (event.data == YT.PlayerState.ENDED) {
-      if (this._isViewer) {
-        //pausePreview中だと強制同期ループしてしまう
-        return;
-      }
       event.target.seekTo(0);
       event.target.playVideo();
     }
+
     if (event.data == YT.PlayerState.PLAYING) {
       // 新動画読み込み時は自動再生されるっぽい？
       // 一時停止中にPreviewリロードで再生される対策
@@ -273,6 +256,10 @@ class VJPlayer {
   _syncing = false;
   __syncTiming() {
     if (this._syncing) return;
+
+    // コントローラーからデータを受け取っていない
+    if (this._data.timing.timestamp == 0) return;
+
     this._syncing = true;
     console.log(`YTVJ:P 同期処理`);
 
@@ -287,22 +274,29 @@ class VJPlayer {
       const expectPlayerTime =
         timing.playerTime + elapsedRealTime * this._data.speed;
 
-      const syncOffset = expectPlayerTime - this.player.getCurrentTime();
-
-      console.log(`YTVJ:P ズレ：${parseInt(syncOffset * 1000)}ms`);
-      if (Math.abs(syncOffset) < 0.01) {
+      if (this.player.getDuration() < expectPlayerTime) {
+        // 計算上の再生位置が動画の長さよりも長ければ同期中止
         this.player.setPlaybackRate(this._data.speed);
         this._syncing = false;
-        console.log(`YTVJ:P 同期完了`);
-      } else if (Math.abs(syncOffset) > 5) {
-        this.player.setPlaybackRate(this._data.speed);
-        this.player.seekTo(expectPlayerTime + 1);
-        this._syncing = false;
-        console.log(`YTVJ:P 強制同期`);
+        console.log(`YTVJ:P 同期中止`);
       } else {
-        const offsetSpd =
-          Math.sign(syncOffset) * Math.max(0.1, Math.abs(syncOffset));
-        this.player.setPlaybackRate(this._data.speed + offsetSpd);
+        const syncOffset = expectPlayerTime - this.player.getCurrentTime();
+
+        console.log(`YTVJ:P ズレ：${parseInt(syncOffset * 1000)}ms`);
+        if (Math.abs(syncOffset) < 0.01) {
+          this.player.setPlaybackRate(this._data.speed);
+          this._syncing = false;
+          console.log(`YTVJ:P 同期完了`);
+        } else if (Math.abs(syncOffset) > 5) {
+          this.player.setPlaybackRate(this._data.speed);
+          this.player.seekTo(expectPlayerTime + 1);
+          this._syncing = false;
+          console.log(`YTVJ:P 強制同期`);
+        } else {
+          const offsetSpd =
+            Math.sign(syncOffset) * Math.max(0.1, Math.abs(syncOffset));
+          this.player.setPlaybackRate(this._data.speed + offsetSpd);
+        }
       }
       if (this._syncing) {
         setTimeout(() => {
