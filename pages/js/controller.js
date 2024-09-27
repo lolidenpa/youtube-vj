@@ -102,5 +102,5 @@ function calcOpacity() {
 }
 
 function OpenProjectionWindow() {
-  window.open("./preview.html", "Projection", "width=640,height=360");
+  window.open("./projection.html", "Projection", "width=640,height=360");
 }
