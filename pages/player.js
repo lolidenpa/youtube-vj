@@ -17,6 +17,16 @@ class VJController {
       onStateChange: (e) => {
         this._onPlayerStateChange(e);
       },
+      onSyncStart: () => {
+        if (event.onSyncStart) {
+          event.onSyncStart();
+        }
+      },
+      onSyncEnd: () => {
+        if (event.onSyncEnd) {
+          event.onSyncEnd();
+        }
+      },
     });
 
     localStorage.removeItem(this._elementId);
@@ -279,6 +289,9 @@ class VJPlayer {
     this._syncing = true;
     console.log(`YTVJ:P 同期処理`);
 
+    if (this._events.onSyncStart) {
+      this._events.onSyncStart();
+    }
     const process = () => {
       if (this._data.pause) {
         this._syncing = false;
@@ -292,7 +305,6 @@ class VJPlayer {
 
       if (this.player.getDuration() < expectPlayerTime) {
         // 計算上の再生位置が動画の長さよりも長ければ同期中止
-        this.player.setPlaybackRate(this._data.speed);
         this._syncing = false;
         console.log(`YTVJ:P 同期中止`);
       } else {
@@ -300,13 +312,11 @@ class VJPlayer {
 
         console.log(`YTVJ:P ズレ：${parseInt(syncOffset * 1000)}ms`);
         if (Math.abs(syncOffset) < 0.01) {
-          this.player.setPlaybackRate(this._data.speed);
           this._syncing = false;
           console.log(`YTVJ:P 同期完了`);
         } else if (Math.abs(syncOffset) > 5) {
-          this.player.setPlaybackRate(this._data.speed);
-          this.player.seekTo(expectPlayerTime + 1);
-          this._syncing = false;
+          this.player.seekTo(expectPlayerTime + 0.5);
+          //this._syncing = false;
           console.log(`YTVJ:P 強制同期`);
         } else {
           const offsetSpd =
@@ -318,6 +328,11 @@ class VJPlayer {
         setTimeout(() => {
           process();
         }, 100);
+      } else {
+        this.player.setPlaybackRate(this._data.speed);
+        if (this._events.onSyncEnd) {
+          this._events.onSyncEnd();
+        }
       }
     };
     process();

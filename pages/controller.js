@@ -9,6 +9,14 @@ window.addEventListener("load", () => {
       const overlay = document.querySelector(".deck.left .suspend");
       overlay.classList.add("hidden");
     },
+    onSyncStart: () => {
+      const overlay = document.querySelector(".deck.left .syncing");
+      overlay.classList.remove("hidden");
+    },
+    onSyncEnd: () => {
+      const overlay = document.querySelector(".deck.left .syncing");
+      overlay.classList.add("hidden");
+    },
   });
 
   RPlayer = new VJController("rightPlayer", {
@@ -18,6 +26,14 @@ window.addEventListener("load", () => {
     },
     onResumePreview: () => {
       const overlay = document.querySelector(".deck.right .suspend");
+      overlay.classList.add("hidden");
+    },
+    onSyncStart: () => {
+      const overlay = document.querySelector(".deck.right .syncing");
+      overlay.classList.remove("hidden");
+    },
+    onSyncEnd: () => {
+      const overlay = document.querySelector(".deck.right .syncing");
       overlay.classList.add("hidden");
     },
   });
