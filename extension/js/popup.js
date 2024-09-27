@@ -1,17 +1,17 @@
-document.addEventListener("DOMContentLoaded", function () {
-  var links = document.getElementsByTagName("a");
-  for (var i = 0; i < links.length; i++) {
-    (function () {
-      var ln = links[i];
-      var location = ln.href;
-      ln.onclick = function () {
-        chrome.windows.create({
-          url: location,
-          type: "popup",
-          width: 768,
-          height: 432,
-        });
-      };
-    })();
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  const OPEN_URLs = [
+    "https://srv-rpi4-main.kazuprog.work/youtube-vj/controller.html",
+    "https://srv-rpi4-main.kazuprog.work/youtube-vj/preview.html",
+  ];
+  const btn = document.querySelector("#open_windows");
+  btn.addEventListener("click", () => {
+    OPEN_URLs.map((url) => {
+      chrome.windows.create({
+        url,
+        type: "popup",
+        width: 768,
+        height: 432,
+      });
+    });
+  });
 });

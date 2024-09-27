@@ -14,10 +14,9 @@
       "run_at": "document_end"
     }
   ],
-  "description": "",
+  "description": "You can perform VJ using YouTube videos.",
   "manifest_version": 3,
   "name": "YouTube-VJ",
-  "options_page": "html/popup.html",
   "permissions": ["storage"],
   "version": "0.1"
 }
