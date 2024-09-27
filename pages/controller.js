@@ -1,7 +1,26 @@
 var LPlayer, RPlayer;
 window.addEventListener("load", () => {
-  LPlayer = new VJController("leftPlayer");
-  RPlayer = new VJController("rightPlayer");
+  LPlayer = new VJController("leftPlayer", {
+    onSuspendPreview: () => {
+      const overlay = document.querySelector(".deck.left .suspend");
+      overlay.classList.remove("hidden");
+    },
+    onResumePreview: () => {
+      const overlay = document.querySelector(".deck.left .suspend");
+      overlay.classList.add("hidden");
+    },
+  });
+
+  RPlayer = new VJController("rightPlayer", {
+    onSuspendPreview: () => {
+      const overlay = document.querySelector(".deck.right .suspend");
+      overlay.classList.remove("hidden");
+    },
+    onResumePreview: () => {
+      const overlay = document.querySelector(".deck.right .suspend");
+      overlay.classList.add("hidden");
+    },
+  });
 
   const relayElement = document.querySelector("#videoId");
 

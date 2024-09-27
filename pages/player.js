@@ -7,11 +7,13 @@ class VJController {
     speed: 1,
   };
   _elementId;
+  _event;
   _pausePreview = false;
 
-  constructor(elementId, data = {}) {
+  constructor(elementId, event = {}) {
     this._elementId = elementId;
-    this.player = new VJPlayer(elementId, data, false, {
+    this._event = event;
+    this.player = new VJPlayer(elementId, {}, false, {
       onStateChange: (e) => {
         this._onPlayerStateChange(e);
       },
@@ -61,7 +63,12 @@ class VJController {
 
     if (e.data == YT.PlayerState.PLAYING) {
       // 再生されたらプレビューの一時停止は解除
-      this._pausePreview = false;
+      if (this._pausePreview) {
+        if (this._event.onResumePreview) {
+          this._event.onResumePreview();
+        }
+        this._pausePreview = false;
+      }
       if (this._isChangeTiming) {
         this._setTiming();
         this._isChangeTiming = false;
@@ -101,10 +108,19 @@ class VJController {
     );
   }
 
-  pausePreview() {
-    this._pausePreview = true;
+  suspendPreview() {
+    if (!this._pausePreview) {
+      if (this._event.onSuspendPreview) {
+        this._event.onSuspendPreview();
+      }
+      this._pausePreview = true;
+    }
     this.player._syncing = false;
     this.player.player.pauseVideo();
+  }
+
+  resumePreview() {
+    this.player.player.playVideo();
   }
 
   adjustTiming(sec) {
