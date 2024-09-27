@@ -53,6 +53,8 @@ window.addEventListener("load", () => {
 
   changeVideo(relayElement.value);
   calcOpacity();
+  setLSpeed(1);
+  setRSpeed(1);
 });
 
 var prepareVideoId;
@@ -61,6 +63,24 @@ function changeVideo(id) {
     ".yt-thumbnail"
   ).src = `https://img.youtube.com/vi/${id}/default.jpg`;
   prepareVideoId = id;
+}
+
+function setLSpeed(val) {
+  val = parseFloat(val);
+  LPlayer.setData("speed", val);
+  document.querySelector(".deck.left .speed input[type=range]").value =
+    val.toFixed(2);
+  document.querySelector(".deck.left .speed input[type=number]").value =
+    val.toFixed(2);
+}
+
+function setRSpeed(val) {
+  val = parseFloat(val);
+  RPlayer.setData("speed", val);
+  document.querySelector(".deck.right .speed input[type=range]").value =
+    val.toFixed(2);
+  document.querySelector(".deck.right .speed input[type=number]").value =
+    val.toFixed(2);
 }
 
 function calcOpacity() {
