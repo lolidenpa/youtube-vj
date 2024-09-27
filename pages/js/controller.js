@@ -60,10 +60,12 @@ window.addEventListener("load", () => {
 
 var prepareVideoId;
 function changeVideo(id) {
-  document.querySelector(
-    ".yt-thumbnail"
-  ).src = `https://img.youtube.com/vi/${id}/default.jpg`;
-  prepareVideoId = id;
+  if (id.length === 11) {
+    const url = `https://img.youtube.com/vi/${id}/default.jpg`;
+    document.querySelector(".yt-thumbnail").src = url;
+    document.querySelector("#input-videoId").value = id;
+    prepareVideoId = id;
+  }
 }
 
 function setLSpeed(val) {

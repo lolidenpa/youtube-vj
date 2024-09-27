@@ -112,10 +112,22 @@ body > div.mixer {
   margin-bottom: 8px;
 }
 
-.yt-thumbnail {
+.load-track {
+  margin-bottom: 10px;
+}
+.load-track .yt-thumbnail {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover; /* 中心部分を表示 */
+}
+
+.load-track input#input-videoId {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: solid 1px #555;
+  outline: none;
+  color: white;
 }
 
 .vertical-fader-container {

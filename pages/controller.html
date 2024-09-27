@@ -62,7 +62,6 @@
       </div>
     </div>
     <div class="mixer">
-      <data value="0" id="videoId"></data>
       <div class="load">
         <button onclick="LPlayer.setData('videoId', prepareVideoId)">
           Load
@@ -72,9 +71,16 @@
           Load
         </button>
       </div>
-      <fieldset>
+      <fieldset class="load-track">
         <legend>Load Track</legend>
+        <data value="" id="videoId"></data>
         <img class="yt-thumbnail" />
+        <input
+          type="text"
+          id="input-videoId"
+          placeholder="enter YouTube id"
+          oninput="changeVideo(this.value)"
+        />
       </fieldset>
       <fieldset style="padding: 0">
         <legend>Opacity</legend>
