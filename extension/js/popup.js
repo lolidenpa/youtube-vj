@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
       chrome.windows.create({
         url,
         type: "popup",
-        width: 768,
-        height: 432,
+        width: 960,
+        height: 540,
       });
     });
   });
