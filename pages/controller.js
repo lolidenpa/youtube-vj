@@ -42,7 +42,6 @@ function changeVideo(id) {
   document.querySelector(
     ".yt-thumbnail"
   ).src = `https://img.youtube.com/vi/${id}/default.jpg`;
-  document.querySelector(".videoId").innerText = id;
   prepareVideoId = id;
 }
 function setLOpacity(value) {

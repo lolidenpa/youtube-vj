@@ -1,0 +1,71 @@
+/* フェーダー実装例
+
+横フェーダー
+<div class="fader-container" style="width: 200px">
+  <input type="range" />
+</div>
+
+縦フェーダー
+<div class="fader-container vertical-fader" style="height: 200px">
+  <input type="range" style="width: 200px" />
+</div>
+
+
+*/
+
+html {
+  --fader-track-thinness: 8px;
+  --fader-thumb-width: 50px;
+  --fader-thumb-thickness: 20px;
+}
+
+div.fader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 縦フェーダー */
+div.fader-container.vertical-fader {
+  width: var(--fader-thumb-width);
+}
+
+/* 横フェーダー */
+div.fader-container:not(.vertical-fader) {
+  height: var(--fader-thumb-width);
+}
+
+div.fader-container > input {
+  -webkit-appearance: none;
+  flex-shrink: 0; /* Flexbox使用時にwidthが機能しない対策 */
+  height: 0;
+  appearance: none;
+}
+
+div.fader-container:not(.vertical-fader) > input {
+  width: 100%;
+}
+
+div.fader-container.vertical-fader > input {
+  transform: rotate(270deg);
+}
+
+div.fader-container > input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--fader-thumb-thickness);
+  height: var(--fader-thumb-width);
+  margin-top: calc(
+    -1 * (var(--fader-thumb-width) - var(--fader-track-thinness)) / 2
+  );
+  background: #333;
+  border: 1px solid #555;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+div.fader-container > input::-webkit-slider-runnable-track {
+  height: var(--fader-track-thinness);
+  background: black;
+  border-radius: calc(var(--fader-track-thinness) / 2);
+}
