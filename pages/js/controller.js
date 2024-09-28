@@ -68,6 +68,20 @@ function changeVideo(id) {
   }
 }
 
+function switchVideo() {
+  const crossFader = document.querySelector(".crossfader input");
+  const dir = -Math.sign(crossFader.value);
+  var val = parseFloat(crossFader.value);
+  const interval = setInterval(() => {
+    val += dir / 50;
+    crossFader.value = val;
+    calcOpacity();
+    if (Math.abs(val) >= 1) {
+      clearInterval(interval);
+    }
+  }, 10);
+}
+
 function setLSpeed(val) {
   val = parseFloat(val);
   LPlayer.setData("speed", val);
