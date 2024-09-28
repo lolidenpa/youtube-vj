@@ -1,7 +1,7 @@
 var LPlayer, RPlayer;
 window.addEventListener("load", () => {
   const onChangeVideoHandler = (videoId) => {
-    document.querySelector("#loadedId").value = videoId;
+    document.querySelector("#loadedVideoId").value = videoId;
   };
 
   LPlayer = new VJController("leftPlayer", {

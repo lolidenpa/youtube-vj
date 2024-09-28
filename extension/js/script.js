@@ -1,74 +1,99 @@
+"use strict";
+
 if (location.origin == "https://www.youtube.com") {
   /**
    * YouTube-VJ YouTube
    */
-  var currentUrl = null;
-  var currentVideoId = null;
-  const observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      if (window.location.href === currentUrl) {
-        return;
-      }
+  let currentVideoId = null;
 
-      currentUrl = window.location.href;
+  const onYouTubeVideoChanged = (videoId) => {
+    console.log(`YTVJ:E onYouTubeVideoChanged:${videoId}`);
+    currentVideoId = videoId;
+    chrome.storage.local.set({ videoId });
+  };
 
-      if (location.pathname !== "/watch") {
-        return;
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      const videoId = params.get("v");
-      currentVideoId = videoId;
-
-      chrome.storage.local.set({ videoId }).then(() => {
-        console.log(`YTVJ:E Set current videoId:${videoId}`);
-      });
-    });
-  });
-
-  observer.observe(document, { subtree: true, childList: true });
-
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (changes.loadedId) {
-      if (changes.loadedId.newValue === currentVideoId) {
-        document.querySelector("video").pause();
-      }
+  const onVideoLoadedToDeck = (loadedVideoId) => {
+    console.log(`YTVJ:E onVideoLoadedToDeck:${loadedVideoId}`);
+    if (loadedVideoId === currentVideoId) {
+      document.querySelector("video").pause();
     }
-  });
+  };
+
+  // onYouTubeVideoChanged Dispatcher
+  ((callback) => {
+    let videoId = null;
+
+    const checkVideoChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const currentVideoId = params.get("v");
+
+      if (currentVideoId === null) {
+        return;
+      }
+
+      if (currentVideoId !== videoId) {
+        videoId = currentVideoId;
+        callback(videoId);
+      }
+    };
+
+    new MutationObserver(() => {
+      checkVideoChange();
+    }).observe(document.querySelector("div#movie_player"), { childList: true });
+
+    checkVideoChange();
+  })(onYouTubeVideoChanged);
+
+  // onVideoLoadedToDeck Dispatcher
+  ((callback) => {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (changes.loadedVideoId) {
+        if (changes.loadedVideoId.newValue === null) {
+          return;
+        }
+        callback(changes.loadedVideoId.newValue);
+      }
+    });
+  })(onVideoLoadedToDeck);
 } else {
   /**
    * YouTube-VJ Controller
    */
-  const relayElement = document.querySelector("#videoId");
-  console.log(relayElement);
+  chrome.storage.local.set({ loadedVideoId: null });
 
-  // Reset storage
-  chrome.storage.local.set({ loadedId: null });
+  const onYouTubeVideoChanged = (videoId) => {
+    console.log(`YTVJ:E onYouTubeVideoChanged:${videoId}`);
+    document.querySelector("#videoId").value = videoId;
+  };
 
-  chrome.storage.local.get("videoId", function (items) {
-    console.log("YTVJ:E Read storage(videoId)");
-    relayElement.value = items.videoId;
-  });
+  const onVideoLoadedToDeck = (videoId) => {
+    console.log(`YTVJ:E onVideoLoadedToDeck:${videoId}`);
+    chrome.storage.local.set({ loadedVideoId: videoId });
+  };
 
-  console.log("YTVJ:E Watching storage(videoId)");
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (changes.videoId) {
-      console.log("YTVJ:E Read storage(videoId)");
-      relayElement.value = changes.videoId.newValue;
-    }
-  });
+  // onYouTubeVideoChanged Dispatcher
+  ((callback) => {
+    const dispatch = () => {
+      chrome.storage.local.get("videoId", (items) => {
+        callback(items.videoId);
+      });
+    };
 
-  console.log("YTVJ:E set MutationObserver(loadedId)");
-  const element = document.querySelector("#loadedId");
-  const observer = new MutationObserver(() => {
-    const loadedId = element.value;
-    chrome.storage.local.set({ loadedId }).then(() => {
-      console.log(`YTVJ:E loadedId=${loadedId} >Storage`);
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      if (changes.videoId) {
+        dispatch();
+      }
     });
-  });
-  observer.observe(element, {
-    attributes: true,
-    childList: true,
-    characterData: true,
-  });
+
+    dispatch();
+  })(onYouTubeVideoChanged);
+
+  // onVideoLoadedToDeck Dispatcher
+  ((callback) => {
+    const targetElement = document.querySelector("#loadedVideoId");
+
+    new MutationObserver(() => {
+      callback(targetElement.value);
+    }).observe(targetElement, { attributes: true });
+  })(onVideoLoadedToDeck);
 }
