@@ -116,6 +116,12 @@ class VJController {
         },
       })
     );
+
+    if (key === "videoId") {
+      if (this._event.onChangeVideo) {
+        this._event.onChangeVideo(value);
+      }
+    }
   }
 
   suspendPreview() {

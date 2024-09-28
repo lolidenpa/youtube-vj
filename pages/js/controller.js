@@ -1,6 +1,11 @@
 var LPlayer, RPlayer;
 window.addEventListener("load", () => {
+  const onChangeVideoHandler = (videoId) => {
+    document.querySelector("#loadedId").value = videoId;
+  };
+
   LPlayer = new VJController("leftPlayer", {
+    onChangeVideo: onChangeVideoHandler,
     onSuspendPreview: () => {
       const overlay = document.querySelector(".deck.left .suspend");
       overlay.classList.remove("hidden");
@@ -20,6 +25,7 @@ window.addEventListener("load", () => {
   });
 
   RPlayer = new VJController("rightPlayer", {
+    onChangeVideo: onChangeVideoHandler,
     onSuspendPreview: () => {
       const overlay = document.querySelector(".deck.right .suspend");
       overlay.classList.remove("hidden");
