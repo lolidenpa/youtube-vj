@@ -65,8 +65,24 @@ window.addEventListener("load", () => {
 });
 
 var prepareVideoId;
-function changeVideo(id) {
-  if (id.length === 11) {
+function changeVideo(text) {
+  let id;
+  if (text.length === 11) {
+    id = text;
+  } else {
+    if (/^(https?:\/\/)[^\s$.?#].[^\s]*$/i.test(text)) {
+      const url = new URL(text);
+      if (url.hostname === "youtu.be") {
+        id = url.pathname.substr(1, 11);
+      }
+      if (url.pathname === "/watch") {
+        const params = new URLSearchParams(url.search);
+        id = params.get("v");
+      }
+    }
+  }
+
+  if (id) {
     const url = `https://img.youtube.com/vi/${id}/default.jpg`;
     document.querySelector(".yt-thumbnail").src = url;
     document.querySelector("#input-videoId").value = id;
