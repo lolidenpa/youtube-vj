@@ -1,7 +1,7 @@
 var LPlayer, RPlayer;
 window.addEventListener("load", () => {
-  LPlayer = new VJPlayer("leftPlayer", {}, true);
-  RPlayer = new VJPlayer("rightPlayer", {}, true);
+  LPlayer = new VJPlayer(1, {}, true);
+  RPlayer = new VJPlayer(2, {}, true);
 
   window.addEventListener("storage", (event) => {
     document.dispatchEvent(

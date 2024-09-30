@@ -4,7 +4,7 @@ window.addEventListener("load", () => {
     document.querySelector("#loadedVideoId").value = videoId;
   };
 
-  LPlayer = new VJController("leftPlayer", {
+  LPlayer = new VJController(1, {
     onChangeVideo: onChangeVideoHandler,
     onSuspendPreview: () => {
       const overlay = document.querySelector(".deck.left .suspend");
@@ -24,7 +24,7 @@ window.addEventListener("load", () => {
     },
   });
 
-  RPlayer = new VJController("rightPlayer", {
+  RPlayer = new VJController(2, {
     onChangeVideo: onChangeVideoHandler,
     onSuspendPreview: () => {
       const overlay = document.querySelector(".deck.right .suspend");

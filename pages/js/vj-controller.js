@@ -10,10 +10,9 @@ class VJController {
   _event;
   _pausePreview = false;
 
-  constructor(elementId, event = {}) {
-    this._elementId = elementId;
+  constructor(channel, event = {}) {
     this._event = event;
-    this.player = new VJPlayer(elementId, {}, false, {
+    this.player = new VJPlayer(channel, {}, false, {
       onStateChange: (e) => {
         this._onPlayerStateChange(e);
       },
@@ -28,8 +27,9 @@ class VJController {
         }
       },
     });
+    this._elementId = this.player._elementId;
 
-    localStorage.removeItem(this._elementId);
+    localStorage.removeItem(this.player._localStorageKey);
   }
 
   _isChangeTiming = false;
@@ -105,13 +105,16 @@ class VJController {
       }, 100);
     }
 
-    localStorage.setItem(this._elementId, JSON.stringify(this._data));
+    localStorage.setItem(
+      this.player._localStorageKey,
+      JSON.stringify(this._data)
+    );
 
     // カスタムイベントを作成して発火
     document.dispatchEvent(
       new CustomEvent("VJPlayerUpdated", {
         detail: {
-          key: this._elementId,
+          key: this.player._localStorageKey,
           value: JSON.stringify(this._data),
         },
       })

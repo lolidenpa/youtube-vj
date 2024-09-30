@@ -1,13 +1,15 @@
 class VJPlayer {
   player = null;
   _elementId = null;
+  _localStorageKey = null;
   _isViewer = null;
   _data = {};
   _events = {};
 
-  constructor(elementId, data = {}, viewer = false, events = {}) {
+  constructor(channel, data = {}, viewer = false, events = {}) {
     this._events = events;
-    this._elementId = elementId;
+    this._elementId = `vj_player_ch${channel}`;
+    this._localStorageKey = `ytvj_ch${channel}`;
     this._isViewer = viewer;
     data = {
       speed: 1,
@@ -20,7 +22,7 @@ class VJPlayer {
       ...data,
     };
 
-    this.player = new YT.Player(elementId, {
+    this.player = new YT.Player(this._elementId, {
       videoId: data.videoId,
       events: {
         onReady: (e) => {
@@ -51,7 +53,7 @@ class VJPlayer {
     event.target.mute();
 
     document.addEventListener("VJPlayerUpdated", (event) => {
-      if (event.detail.key === this._elementId) {
+      if (event.detail.key === this._localStorageKey) {
         const data = JSON.parse(event.detail.value);
         for (const key in data) {
           this.__applyData(key, data[key]);
@@ -63,8 +65,8 @@ class VJPlayer {
     document.dispatchEvent(
       new CustomEvent("VJPlayerUpdated", {
         detail: {
-          key: this._elementId,
-          value: localStorage.getItem(this._elementId),
+          key: this._localStorageKey,
+          value: localStorage.getItem(this._localStorageKey),
         },
       })
     );
