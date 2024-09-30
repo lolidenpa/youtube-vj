@@ -37,9 +37,22 @@ if (location.origin == "https://www.youtube.com") {
       }
     };
 
-    new MutationObserver(() => {
+    const titleObserver = new MutationObserver(() => {
       checkVideoChange();
-    }).observe(document.querySelector("div#movie_player"), { childList: true });
+
+      const playerElement = document.querySelector("div#movie_player");
+      if (playerElement) {
+        new MutationObserver(() => {
+          checkVideoChange();
+        }).observe(playerElement, {
+          childList: true,
+        });
+        titleObserver.disconnect();
+      }
+    });
+    titleObserver.observe(document.querySelector("title"), {
+      childList: true,
+    });
 
     checkVideoChange();
   })(onYouTubeVideoChanged);
