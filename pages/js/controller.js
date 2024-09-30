@@ -26,8 +26,8 @@ window.addEventListener("load", () => {
     },
   };
 
-  VJC[ch1] = new VJController(1, eventHandlers);
-  VJC[ch2] = new VJController(2, eventHandlers);
+  VJC[ch1] = new VJController(1, { events: eventHandlers, autoplay: true });
+  VJC[ch2] = new VJController(2, { events: eventHandlers });
 
   const relayElement = document.querySelector("#videoId");
 
