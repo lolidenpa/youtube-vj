@@ -1,10 +1,12 @@
 class VJController {
+  #channel;
   #data = {};
   #events;
   #isSuspendPreview = false;
   #isChangeTiming = false;
 
   constructor(channel, events = {}) {
+    this.#channel = channel;
     this.#events = events;
     this.player = new VJPlayer(channel, {
       events: {
@@ -13,12 +15,12 @@ class VJController {
         },
         onSyncStart: () => {
           if (this.#events.onSyncStart) {
-            this.#events.onSyncStart(channel);
+            this.#events.onSyncStart(this.#channel);
           }
         },
         onSyncEnd: () => {
           if (this.#events.onSyncEnd) {
-            this.#events.onSyncEnd(channel);
+            this.#events.onSyncEnd(this.#channel);
           }
         },
       },
@@ -69,7 +71,7 @@ class VJController {
       // 再生されたらプレビューの一時停止は解除
       if (this.#isSuspendPreview) {
         if (this.#events.onResumePreview) {
-          this.#events.onResumePreview(channel);
+          this.#events.onResumePreview(this.#channel);
         }
         this.#isSuspendPreview = false;
       }
@@ -106,7 +108,7 @@ class VJController {
 
     if (key === "videoId") {
       if (this.#events.onChangeVideo) {
-        this.#events.onChangeVideo(channel, value);
+        this.#events.onChangeVideo(this.#channel, value);
       }
     }
   }
@@ -121,11 +123,11 @@ class VJController {
   suspendPreview() {
     if (!this.#isSuspendPreview) {
       if (this.#events.onSuspendPreview) {
-        this.#events.onSuspendPreview(channel);
+        this.#events.onSuspendPreview(this.#channel);
       }
       this.#isSuspendPreview = true;
     }
-    this.player._syncing = false;
+    this.player.stopSync();
     this.player.YTPlayer.pauseVideo();
   }
 
