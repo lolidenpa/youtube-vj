@@ -5,9 +5,9 @@ class VJController {
   #isSuspendPreview = false;
   #isChangeTiming = false;
 
-  constructor(channel, events = {}) {
+  constructor(channel, options = {}) {
     this.#channel = channel;
-    this.#events = events;
+    this.#events = options.events;
     this.player = new VJPlayer(channel, {
       events: {
         onStateChange: (e) => {
@@ -27,6 +27,9 @@ class VJController {
     });
 
     localStorage.removeItem(this.player.localStorageKey);
+    if (options.autoplay) {
+      this.setData("pause", false);
+    }
   }
 
   _onPlayerStateChange(e) {

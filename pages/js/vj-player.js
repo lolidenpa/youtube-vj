@@ -16,7 +16,7 @@ class VJPlayer {
     };
     this.#data = {
       speed: 1,
-      pause: false,
+      pause: true,
       timing: {
         timestamp: 0,
         playerTime: 0,
@@ -39,7 +39,6 @@ class VJPlayer {
         },
       },
       playerVars: {
-        autoplay: 1, // 自動再生
         fs: 0, // 全画面表示ボタンを非表示
         iv_load_policy: 3, // アノテーション無効
       },
