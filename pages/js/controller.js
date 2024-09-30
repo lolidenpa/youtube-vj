@@ -59,8 +59,6 @@ window.addEventListener("load", () => {
 
   changeVideo(relayElement.value);
   calcOpacity();
-  setLSpeed(1);
-  setRSpeed(1);
   OpenProjectionWindow();
 });
 
@@ -127,12 +125,12 @@ function calcOpacity() {
   var r = parseFloat(document.querySelector("#Ropacity").value);
   var s = parseFloat(document.querySelector("#cross-fader").value);
   if (s < 0) {
-    LPlayer.setData("z-index", 0);
-    RPlayer.setData("z-index", 1);
+    LPlayer.setData("zIndex", 0);
+    RPlayer.setData("zIndex", 1);
     r *= (1 - Math.abs(s)) * 0.5;
   } else {
-    LPlayer.setData("z-index", 1);
-    RPlayer.setData("z-index", 0);
+    LPlayer.setData("zIndex", 1);
+    RPlayer.setData("zIndex", 0);
     l *= (1 - Math.abs(s)) * 0.5;
   }
   LPlayer.setData("opacity", l);

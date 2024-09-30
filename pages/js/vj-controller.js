@@ -1,38 +1,32 @@
 class VJController {
-  _data = {
-    videoId: "BLeUas72Mzk",
-    pause: false,
-    opacity: 1,
-    "z-index": 0,
-    speed: 1,
-  };
-  _elementId;
-  _event;
-  _pausePreview = false;
+  #data = {};
+  #events;
+  #isSuspendPreview = false;
+  #isChangeTiming = false;
 
-  constructor(channel, event = {}) {
-    this._event = event;
-    this.player = new VJPlayer(channel, {}, false, {
-      onStateChange: (e) => {
-        this._onPlayerStateChange(e);
-      },
-      onSyncStart: () => {
-        if (event.onSyncStart) {
-          event.onSyncStart();
-        }
-      },
-      onSyncEnd: () => {
-        if (event.onSyncEnd) {
-          event.onSyncEnd();
-        }
+  constructor(channel, events = {}) {
+    this.#events = events;
+    this.player = new VJPlayer(channel, {
+      events: {
+        onStateChange: (e) => {
+          this._onPlayerStateChange(e);
+        },
+        onSyncStart: () => {
+          if (this.#events.onSyncStart) {
+            this.#events.onSyncStart();
+          }
+        },
+        onSyncEnd: () => {
+          if (this.#events.onSyncEnd) {
+            this.#events.onSyncEnd();
+          }
+        },
       },
     });
-    this._elementId = this.player._elementId;
 
-    localStorage.removeItem(this.player._localStorageKey);
+    localStorage.removeItem(this.player.localStorageKey);
   }
 
-  _isChangeTiming = false;
   _onPlayerStateChange(e) {
     /**
      * 3: BUFFERING
@@ -57,95 +51,94 @@ class VJController {
     // 動画変更時は自動再生、タイミング通知
     if (e.data == YT.PlayerState.UNSTARTED) {
       this.setData("pause", false);
-      this._isChangeTiming = true;
+      this.#isChangeTiming = true;
     }
     if (e.data == YT.PlayerState.PAUSED) {
-      if (this._pausePreview) {
+      if (this.#isSuspendPreview) {
         return;
       }
       this.setData("pause", true);
-      this._isChangeTiming = true;
+      this.#isChangeTiming = true;
     }
 
     if (e.data == YT.PlayerState.ENDED) {
-      this._isChangeTiming = true;
+      this.#isChangeTiming = true;
     }
 
     if (e.data == YT.PlayerState.PLAYING) {
       // 再生されたらプレビューの一時停止は解除
-      if (this._pausePreview) {
-        if (this._event.onResumePreview) {
-          this._event.onResumePreview();
+      if (this.#isSuspendPreview) {
+        if (this.#events.onResumePreview) {
+          this.#events.onResumePreview();
         }
-        this._pausePreview = false;
+        this.#isSuspendPreview = false;
       }
-      if (this._isChangeTiming) {
-        this._setTiming();
-        this._isChangeTiming = false;
+      if (this.#isChangeTiming) {
+        this.setData("timing", this.#getTimingData());
+        this.#isChangeTiming = false;
       } else {
-        this.player.__syncTiming();
+        this.player.syncTiming();
       }
     }
-  }
-
-  _setTiming() {
-    console.log("setTiming");
-    this.setData("timing", {
-      timestamp: +new Date() / 1000,
-      playerTime: this.player.player.getCurrentTime(),
-    });
   }
 
   setData(key, value) {
-    this._data[key] = value;
+    this.#data[key] = value;
     if (key === "speed") {
       // 速度変更なら、タイミング情報も送信
-      setTimeout(() => {
-        this._setTiming();
-      }, 100);
+      this.#data["timing"] = this.#getTimingData();
     }
 
     localStorage.setItem(
-      this.player._localStorageKey,
-      JSON.stringify(this._data)
+      this.player.localStorageKey,
+      JSON.stringify(this.#data)
     );
 
     // カスタムイベントを作成して発火
     document.dispatchEvent(
       new CustomEvent("VJPlayerUpdated", {
         detail: {
-          key: this.player._localStorageKey,
-          value: JSON.stringify(this._data),
+          key: this.player.localStorageKey,
+          value: JSON.stringify(this.#data),
         },
       })
     );
 
     if (key === "videoId") {
-      if (this._event.onChangeVideo) {
-        this._event.onChangeVideo(value);
+      if (this.#events.onChangeVideo) {
+        this.#events.onChangeVideo(value);
       }
     }
+  }
+
+  #getTimingData() {
+    return {
+      timestamp: +new Date() / 1000,
+      playerTime: this.player.YTPlayer.getCurrentTime(),
+    };
   }
 
   suspendPreview() {
-    if (!this._pausePreview) {
-      if (this._event.onSuspendPreview) {
-        this._event.onSuspendPreview();
+    if (!this.#isSuspendPreview) {
+      if (this.#events.onSuspendPreview) {
+        this.#events.onSuspendPreview();
       }
-      this._pausePreview = true;
+      this.#isSuspendPreview = true;
     }
     this.player._syncing = false;
-    this.player.player.pauseVideo();
+    this.player.YTPlayer.pauseVideo();
   }
 
   resumePreview() {
-    this.player.player.playVideo();
+    if (this.#isSuspendPreview) {
+      this.player.YTPlayer.playVideo();
+    }
   }
 
   adjustTiming(sec) {
     this.setData("timing", {
-      timestamp: this._data.timing.timestamp,
-      playerTime: this._data.timing.playerTime + sec,
+      timestamp: this.#data.timing.timestamp,
+      playerTime: this.#data.timing.playerTime + sec,
     });
   }
 }
