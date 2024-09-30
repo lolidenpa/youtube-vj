@@ -1,48 +1,29 @@
 var LPlayer, RPlayer;
 window.addEventListener("load", () => {
-  const onChangeVideoHandler = (videoId) => {
-    document.querySelector("#loadedVideoId").value = videoId;
+  const eventHandlers = {
+    onChangeVideo: (channel, videoId) => {
+      document.querySelector("#loadedVideoId").value = videoId;
+    },
+    onSuspendPreview: (channel) => {
+      const overlay = document.querySelector(`.deck.ch${channel} .suspend`);
+      overlay.classList.remove("hidden");
+    },
+    onResumePreview: (channel) => {
+      const overlay = document.querySelector(`.deck.ch${channel} .suspend`);
+      overlay.classList.add("hidden");
+    },
+    onSyncStart: (channel) => {
+      const overlay = document.querySelector(`.deck.ch${channel} .syncing`);
+      overlay.classList.remove("hidden");
+    },
+    onSyncEnd: (channel) => {
+      const overlay = document.querySelector(`.deck.ch${channel} .syncing`);
+      overlay.classList.add("hidden");
+    },
   };
 
-  LPlayer = new VJController(1, {
-    onChangeVideo: onChangeVideoHandler,
-    onSuspendPreview: () => {
-      const overlay = document.querySelector(".deck.left .suspend");
-      overlay.classList.remove("hidden");
-    },
-    onResumePreview: () => {
-      const overlay = document.querySelector(".deck.left .suspend");
-      overlay.classList.add("hidden");
-    },
-    onSyncStart: () => {
-      const overlay = document.querySelector(".deck.left .syncing");
-      overlay.classList.remove("hidden");
-    },
-    onSyncEnd: () => {
-      const overlay = document.querySelector(".deck.left .syncing");
-      overlay.classList.add("hidden");
-    },
-  });
-
-  RPlayer = new VJController(2, {
-    onChangeVideo: onChangeVideoHandler,
-    onSuspendPreview: () => {
-      const overlay = document.querySelector(".deck.right .suspend");
-      overlay.classList.remove("hidden");
-    },
-    onResumePreview: () => {
-      const overlay = document.querySelector(".deck.right .suspend");
-      overlay.classList.add("hidden");
-    },
-    onSyncStart: () => {
-      const overlay = document.querySelector(".deck.right .syncing");
-      overlay.classList.remove("hidden");
-    },
-    onSyncEnd: () => {
-      const overlay = document.querySelector(".deck.right .syncing");
-      overlay.classList.add("hidden");
-    },
-  });
+  LPlayer = new VJController(1, eventHandlers);
+  RPlayer = new VJController(2, eventHandlers);
 
   const relayElement = document.querySelector("#videoId");
 
