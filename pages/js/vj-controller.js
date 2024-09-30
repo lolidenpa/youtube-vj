@@ -4,6 +4,7 @@ class VJController {
   #events;
   #isSuspendPreview = false;
   #isChangeTiming = false;
+  #isChangeVideoId = false;
 
   constructor(channel, options = {}) {
     this.#channel = channel;
@@ -57,6 +58,7 @@ class VJController {
     if (e.data == YT.PlayerState.UNSTARTED) {
       this.setData("pause", false);
       this.#isChangeTiming = true;
+      this.#isChangeVideoId = true;
     }
     if (e.data == YT.PlayerState.PAUSED) {
       if (this.#isSuspendPreview) {
@@ -84,6 +86,12 @@ class VJController {
       } else {
         this.player.syncTiming();
       }
+      if (this.#isChangeVideoId) {
+        this.#isChangeVideoId = false;
+        if (this.#data.videoId && this.#events.onChangeVideo) {
+          this.#events.onChangeVideo(this.#channel, this.#data.videoId);
+        }
+      }
     }
   }
 
@@ -108,12 +116,6 @@ class VJController {
         },
       })
     );
-
-    if (key === "videoId") {
-      if (this.#events.onChangeVideo) {
-        this.#events.onChangeVideo(this.#channel, value);
-      }
-    }
   }
 
   #getTimingData() {
