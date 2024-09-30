@@ -7,6 +7,7 @@ window.addEventListener("load", () => {
       document.querySelector("#loadedVideoId").value = videoId;
       VJC[channel].unMute();
       VJC[channel == ch1 ? ch2 : ch1].mute();
+      addHistory(videoId, VJC[channel].player.YTPlayer.videoTitle);
     },
     onSuspendPreview: (channel) => {
       const overlay = document.querySelector(`.deck.ch${channel} .suspend`);
@@ -40,6 +41,12 @@ window.addEventListener("load", () => {
     attributes: true,
     childList: true,
     characterData: true,
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.key === "h") {
+      window.open("./history.html", "History", "width=800,height=600");
+    }
   });
 
   changeVideo(relayElement.value);
@@ -124,4 +131,25 @@ function calcOpacity() {
 
 function OpenProjectionWindow() {
   window.open("./projection.html", "Projection", "width=640,height=360");
+}
+
+function addHistory(videoId, videoTitle) {
+  const localStorageKey = "ytvj_history";
+
+  let history = JSON.parse(localStorage.getItem(localStorageKey) || "[]");
+
+  if (history[0] && history[0].id === videoId) {
+    return;
+  }
+
+  history.push({
+    id: videoId,
+    title: videoTitle,
+  });
+
+  if (100 < history.length) {
+    history.shift();
+  }
+
+  localStorage.setItem(localStorageKey, JSON.stringify(history));
 }
