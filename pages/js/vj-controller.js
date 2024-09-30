@@ -13,12 +13,12 @@ class VJController {
         },
         onSyncStart: () => {
           if (this.#events.onSyncStart) {
-            this.#events.onSyncStart();
+            this.#events.onSyncStart(channel);
           }
         },
         onSyncEnd: () => {
           if (this.#events.onSyncEnd) {
-            this.#events.onSyncEnd();
+            this.#events.onSyncEnd(channel);
           }
         },
       },
@@ -69,7 +69,7 @@ class VJController {
       // 再生されたらプレビューの一時停止は解除
       if (this.#isSuspendPreview) {
         if (this.#events.onResumePreview) {
-          this.#events.onResumePreview();
+          this.#events.onResumePreview(channel);
         }
         this.#isSuspendPreview = false;
       }
@@ -106,7 +106,7 @@ class VJController {
 
     if (key === "videoId") {
       if (this.#events.onChangeVideo) {
-        this.#events.onChangeVideo(value);
+        this.#events.onChangeVideo(channel, value);
       }
     }
   }
@@ -121,7 +121,7 @@ class VJController {
   suspendPreview() {
     if (!this.#isSuspendPreview) {
       if (this.#events.onSuspendPreview) {
-        this.#events.onSuspendPreview();
+        this.#events.onSuspendPreview(channel);
       }
       this.#isSuspendPreview = true;
     }
