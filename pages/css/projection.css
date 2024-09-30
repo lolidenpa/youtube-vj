@@ -10,3 +10,11 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9;
+}
