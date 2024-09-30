@@ -1,8 +1,12 @@
-var LPlayer, RPlayer;
+const VJC = [];
+const ch1 = 1;
+const ch2 = 2;
 window.addEventListener("load", () => {
   const eventHandlers = {
     onChangeVideo: (channel, videoId) => {
       document.querySelector("#loadedVideoId").value = videoId;
+      VJC[channel].unMute();
+      VJC[channel == ch1 ? ch2 : ch1].mute();
     },
     onSuspendPreview: (channel) => {
       const overlay = document.querySelector(`.deck.ch${channel} .suspend`);
@@ -22,8 +26,8 @@ window.addEventListener("load", () => {
     },
   };
 
-  LPlayer = new VJController(1, eventHandlers);
-  RPlayer = new VJController(2, eventHandlers);
+  VJC[ch1] = new VJController(1, eventHandlers);
+  VJC[ch2] = new VJController(2, eventHandlers);
 
   const relayElement = document.querySelector("#videoId");
 
@@ -85,7 +89,7 @@ function switchVideo() {
 
 function setLSpeed(val) {
   val = parseFloat(val);
-  LPlayer.setData("speed", val);
+  VJC[ch1].setData("speed", val);
   document.querySelector(".deck.left .speed input[type=range]").value =
     val.toFixed(2);
   document.querySelector(".deck.left .speed input[type=number]").value =
@@ -94,7 +98,7 @@ function setLSpeed(val) {
 
 function setRSpeed(val) {
   val = parseFloat(val);
-  RPlayer.setData("speed", val);
+  VJC[ch2].setData("speed", val);
   document.querySelector(".deck.right .speed input[type=range]").value =
     val.toFixed(2);
   document.querySelector(".deck.right .speed input[type=number]").value =
@@ -106,16 +110,16 @@ function calcOpacity() {
   var r = parseFloat(document.querySelector("#Ropacity").value);
   var s = parseFloat(document.querySelector("#cross-fader").value);
   if (s < 0) {
-    LPlayer.setData("zIndex", 0);
-    RPlayer.setData("zIndex", 1);
+    VJC[ch1].setData("zIndex", 0);
+    VJC[ch2].setData("zIndex", 1);
     r *= (1 - Math.abs(s)) * 0.5;
   } else {
-    LPlayer.setData("zIndex", 1);
-    RPlayer.setData("zIndex", 0);
+    VJC[ch1].setData("zIndex", 1);
+    VJC[ch2].setData("zIndex", 0);
     l *= (1 - Math.abs(s)) * 0.5;
   }
-  LPlayer.setData("opacity", l);
-  RPlayer.setData("opacity", r);
+  VJC[ch1].setData("opacity", l);
+  VJC[ch2].setData("opacity", r);
 }
 
 function OpenProjectionWindow() {

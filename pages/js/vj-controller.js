@@ -120,6 +120,14 @@ class VJController {
     };
   }
 
+  mute() {
+    this.player.YTPlayer.mute();
+  }
+
+  unMute() {
+    this.player.YTPlayer.unMute();
+  }
+
   suspendPreview() {
     if (!this.#isSuspendPreview) {
       if (this.#events.onSuspendPreview) {

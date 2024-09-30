@@ -14,10 +14,10 @@
   <body>
     <div class="deck ch1">
       <fieldset>
-        <legend onclick="LPlayer.suspendPreview()">Preview</legend>
+        <legend onclick="VJC[ch1].suspendPreview()">Preview</legend>
         <div class="preview">
           <div class="yt-player" id="vj_player_ch1"></div>
-          <div class="suspend hidden" onclick="LPlayer.resumePreview()">
+          <div class="suspend hidden" onclick="VJC[ch1].resumePreview()">
             Suspending<br />Preview
           </div>
           <div class="syncing hidden">Syncing...</div>
@@ -27,15 +27,15 @@
         <fieldset>
           <legend>Adjust</legend>
           <div class="adjust">
-            <button onclick="LPlayer.adjustTiming(-1)">&lt;</button>
+            <button onclick="VJC[ch1].adjustTiming(-1)">&lt;</button>
             <span>1s</span>
-            <button onclick="LPlayer.adjustTiming(+1)">&gt;</button>
-            <button onclick="LPlayer.adjustTiming(-0.1)">&lt;</button>
+            <button onclick="VJC[ch1].adjustTiming(+1)">&gt;</button>
+            <button onclick="VJC[ch1].adjustTiming(-0.1)">&lt;</button>
             <span>0.1s</span>
-            <button onclick="LPlayer.adjustTiming(+0.1)">&gt;</button>
-            <button onclick="LPlayer.adjustTiming(-0.01)">&lt;</button>
+            <button onclick="VJC[ch1].adjustTiming(+0.1)">&gt;</button>
+            <button onclick="VJC[ch1].adjustTiming(-0.01)">&lt;</button>
             <span>0.01s</span>
-            <button onclick="LPlayer.adjustTiming(+0.01)">&gt;</button>
+            <button onclick="VJC[ch1].adjustTiming(+0.01)">&gt;</button>
           </div>
         </fieldset>
         <fieldset class="speed">
@@ -63,11 +63,11 @@
     </div>
     <div class="mixer">
       <div class="load">
-        <button onclick="LPlayer.setData('videoId', prepareVideoId)">
+        <button onclick="VJC[ch1].setData('videoId', prepareVideoId)">
           Load
         </button>
         <button onclick="OpenProjectionWindow()"></button>
-        <button onclick="RPlayer.setData('videoId', prepareVideoId)">
+        <button onclick="VJC[ch2].setData('videoId', prepareVideoId)">
           Load
         </button>
       </div>
@@ -128,10 +128,10 @@
     </div>
     <div class="deck ch2">
       <fieldset>
-        <legend onclick="RPlayer.suspendPreview()">Preview</legend>
+        <legend onclick="VJC[ch2].suspendPreview()">Preview</legend>
         <div class="preview">
           <div class="yt-player" id="vj_player_ch2"></div>
-          <div class="suspend hidden" onclick="RPlayer.resumePreview()">
+          <div class="suspend hidden" onclick="VJC[ch2].resumePreview()">
             Suspending<br />Preview
           </div>
           <div class="syncing hidden">Syncing...</div>
@@ -141,15 +141,15 @@
         <fieldset>
           <legend>Adjust</legend>
           <div class="adjust">
-            <button onclick="RPlayer.adjustTiming(-1)">&lt;</button>
+            <button onclick="VJC[ch2].adjustTiming(-1)">&lt;</button>
             <span>1s</span>
-            <button onclick="RPlayer.adjustTiming(+1)">&gt;</button>
-            <button onclick="RPlayer.adjustTiming(-0.1)">&lt;</button>
+            <button onclick="VJC[ch2].adjustTiming(+1)">&gt;</button>
+            <button onclick="VJC[ch2].adjustTiming(-0.1)">&lt;</button>
             <span>0.1s</span>
-            <button onclick="RPlayer.adjustTiming(+0.1)">&gt;</button>
-            <button onclick="RPlayer.adjustTiming(-0.01)">&lt;</button>
+            <button onclick="VJC[ch2].adjustTiming(+0.1)">&gt;</button>
+            <button onclick="VJC[ch2].adjustTiming(-0.01)">&lt;</button>
             <span>0.01s</span>
-            <button onclick="RPlayer.adjustTiming(+0.01)">&gt;</button>
+            <button onclick="VJC[ch2].adjustTiming(+0.01)">&gt;</button>
           </div>
         </fieldset>
 
