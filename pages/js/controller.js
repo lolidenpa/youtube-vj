@@ -97,18 +97,18 @@ function switchVideo() {
 function setLSpeed(val) {
   val = parseFloat(val);
   VJC[ch1].setData("speed", val);
-  document.querySelector(".deck.left .speed input[type=range]").value =
+  document.querySelector(".deck.ch1 .speed input[type=range]").value =
     val.toFixed(2);
-  document.querySelector(".deck.left .speed input[type=number]").value =
+  document.querySelector(".deck.ch1 .speed input[type=number]").value =
     val.toFixed(2);
 }
 
 function setRSpeed(val) {
   val = parseFloat(val);
   VJC[ch2].setData("speed", val);
-  document.querySelector(".deck.right .speed input[type=range]").value =
+  document.querySelector(".deck.ch2 .speed input[type=range]").value =
     val.toFixed(2);
-  document.querySelector(".deck.right .speed input[type=number]").value =
+  document.querySelector(".deck.ch2 .speed input[type=number]").value =
     val.toFixed(2);
 }
 
